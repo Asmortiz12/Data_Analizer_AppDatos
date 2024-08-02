@@ -1,0 +1,46 @@
+.fas {
+    transition: transform 0.3s ease;
+}
+
+.accordion-button[aria-expanded="true"] .fas {
+    transform: rotate(180deg);
+}
+
+.sorted-asc::after {
+    content: '▲';
+}
+
+.sorted-desc::after {
+    content: '▼';
+}
+
+.highlight-column {
+    background-color: #f8f9fa;
+}
+
+.sorted-asc, .sorted-desc {
+    background-color: #d4edda; /* Light green background for sorting indication */
+}
+
+/* Style for highlighting entire column */
+.highlight-column th,
+.highlight-column td {
+    background-color: #d4edda !important; /* Light green background for entire column */
+}
+.sticky-header th {
+position: sticky;
+top: 0;
+background-color: white; /*                                                      uedes cambiar esto al color de fondo de tu tabla */
+z-index: 1;
+}
+ form {
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 10px;
+}
+.form-group{
+    padding: 10px;
+}
+.filter{
+    margin-bottom: 10px;
+}

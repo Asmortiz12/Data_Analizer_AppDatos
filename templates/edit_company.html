@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Company</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="content">
+        <div class="card">
+            <div class="card-body">
+                <h1 class="card-title">Edit Company Information</h1>
+
+                <!-- Form to select a company -->
+                <form method="post" class="mb-4">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        {{ select_form.as_p }}
+                    </div>
+                    <button type="submit" name="select_company" class="btn btn-primary">Select Company</button>
+                </form>
+
+                <!-- Form to update the selected company's information and image -->
+                {% if form %}
+                    <h2 class="mb-4">Edit {{ company.COM_NAME }}</h2>
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="hidden" name="company_name" value="{{ company.COM_NAME }}">
+                        <div class="mb-3">
+                            {{ form.as_p }}
+                        </div>
+                        {% if company.CON_IMAGE %}
+                            <div class="mb-3">
+                                <img src="{{ company.CON_IMAGE.url }}" alt="{{ company.COM_NAME }}" class="img-thumbnail" />
+                            </div>
+                        {% endif %}
+                        <button type="submit" name="update_company" class="btn btn-success">Save changes</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

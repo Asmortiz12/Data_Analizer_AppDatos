@@ -1,0 +1,235 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{{ company.COM_NAME }} Transactions</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+    <link rel="stylesheet" type="" href="{% static 'css/styles.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style-chart.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/tabla.css' %}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" />
+  </head>
+  <body>
+    {% include 'navbar.html' %}
+    <div class="content">
+      <main class="container-fluid">
+        <div class="titulo">
+
+          <img src="{{ company.CON_IMAGE.url }}" alt="{{ company.COM_NAME }}" class="logo_titulo">
+          <h1 class="title">{{ company.COM_NAME }}</h1>
+        </div>
+        <br>
+        <!-- <div class="card mb-4">
+          <div class="card-header">
+            <h3>Information</h3>
+          </div>
+          <div class="card-body">
+            <p>{{ company.COM_IMFORMATION }}</p>
+             Add more fields if necessary 
+          </div>
+        </div>
+        <br>-->
+        <p class="text-muted">Data available from {{ first_record_date }} to {{ last_record_date }}</p>
+        
+        <form method="get" action="">
+          <div class="form-group">
+              <label for="start_date">Start Date:</label>
+              <input type="date" id="start_date" name="start_date" value="{{ start_date }}" class="form-control">
+          </div>
+          <div class="form-group">
+              <label for="end_date">End Date:</label>
+              <input type="date" id="end_date" name="end_date" value="{{ end_date }}" class="form-control">
+          </div>
+          <button type="submit" class="btn filter btn-primary" style="margin-bottom:-1px;">Filter</button>
+      </form>
+        <br>
+        <h2>Summary of transactions</h2>
+        <div class="card">
+          <div class="card-body">
+            <table class="table table-vertical">
+              <tbody>
+                <tr>
+                  <th><span class="bullet date"></span> Total Transactions:</th>
+                  <td style="text-align: right;" >{{ general_summary.total_transactions }}</td>
+                </tr>
+                <tr>
+                  <th><span class="bullet shares"></span> Total Shares:</th>
+                  <td style="text-align: right;">{{ general_summary.total_shares }}</td>
+                </tr>
+                <tr>
+                  <th><span class="bullet price"></span> Highest Price:</th>
+                  <td style="text-align: right;">{{ general_summary.highest_price }}</td>
+                </tr>
+                <tr>
+                  <th><span class="bullet price"></span> Lowest Price:</th>
+                  <td style="text-align: right;">{{ general_summary.lowest_price }}</td>
+                </tr>
+                <tr>
+                  <th><span class="bullet cash"></span> Total Value:</th>
+                  <td style="text-align: right;">{{ general_summary.total_value }}</td>
+                </tr>
+                <tr>                
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>      
+        <h2>Charts</h2>
+        <div class="mb-3">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCandlestick" aria-expanded="true" aria-controls="collapseCandlestick">
+            Candlestick Chart <i class="fas fa-chevron-down ms-2"></i>
+          </button>
+          <div id="collapseCandlestick" class="collapse show">
+            <div class="accordion-body">
+              <div class="chart-container">{{ candlestick_div|safe }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMACD" aria-expanded="true" aria-controls="collapseMACD">
+            MACD Chart <i class="fas fa-chevron-down ms-2"></i>
+          </button>
+          <div id="collapseMACD" class="collapse">
+            <div class="accordion-body">
+              <div class="chart-container">{{ macd_div|safe }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRSI" aria-expanded="true" aria-controls="collapseRSI">
+            RSI Chart <i class="fas fa-chevron-down ms-2"></i>
+          </button>
+          <div id="collapseRSI" class="collapse">
+            <div class="accordion-body">
+              <div class="chart-container">{{ rsi_div|safe }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseVolume" aria-expanded="true" aria-controls="collapseVolume">
+            Volume Chart <i class="fas fa-chevron-down ms-2"></i>
+          </button>
+          <div id="collapseVolume" class="collapse">
+            <div class="accordion-body">
+              <div class="chart-container">{{ volume_div|safe }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSMA" aria-expanded="true" aria-controls="collapseSMA">
+            SMA Chart <i class="fas fa-chevron-down ms-2"></i>
+          </button>
+          <div id="collapseSMA" class="collapse">
+            <div class="accordion-body">
+              <div class="chart-container">{{ sma_div|safe }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProjection" aria-expanded="true" aria-controls="collapseProjection">
+            Price Projections <i class="fas fa-chevron-down ms-2"></i>
+          </button>
+          <div id="collapseProjection" class="collapse">
+            <div class="accordion-body">
+              <div class="chart-container">{{ projection_div|safe }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion" id="transactionsAccordion">
+          <div class="accordion-item">
+              <h2 class="accordion-header" id="headingOne">
+                  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                      Transactions <i class="fas fa-chevron-down ms-2"></i>
+                  </button>
+              </h2>
+              <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#transactionsAccordion">
+                  <div class="accordion-body">
+                      <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                          <table class="table table-striped table-sm">
+                              <thead class="sticky-header">
+                                  <tr>
+                                      <th class="{% if sort_by == 'STT_DATE' %} highlight-column {% endif %}">
+                                          <div class="bullet date"></div>Date
+                                          <div class="dropdown">
+                                              <a class="btn dropdown-toggle {% if sort_by == 'STT_DATE' and order == 'asc' %} sorted-asc {% elif sort_by == 'STT_DATE' and order == 'desc' %} sorted-desc {% endif %}" href="#" role="button" id="dateDropdown" data-bs-toggle="dropdown" aria-expanded="false"></a>
+                                              <ul class="dropdown-menu" aria-labelledby="dateDropdown">
+                                                  <li><a class="dropdown-item" href="?sort_by=STT_DATE&order=asc&start_date={{ start_date }}&end_date={{ end_date }}">Old date to new date</a></li>
+                                                  <li><a class="dropdown-item" href="?sort_by=STT_DATE&order=desc&start_date={{ start_date }}&end_date={{ end_date }}">New date to old date</a></li>
+                                              </ul>
+                                          </div>
+                                      </th>
+                                      <th class="{% if sort_by == 'STT_NOMINAL_VALUE' %} highlight-column {% endif %}">
+                                          <div class="bullet nominal"></div>Nominal Value
+                                          <div class="dropdown">
+                                              <a class="btn dropdown-toggle {% if sort_by == 'STT_NOMINAL_VALUE' and order == 'asc' %} sorted-asc {% elif sort_by == 'STT_NOMINAL_VALUE' and order == 'desc' %} sorted-desc {% endif %}" href="#" role="button" id="nominalValueDropdown" data-bs-toggle="dropdown" aria-expanded="false"></a>
+                                              <ul class="dropdown-menu" aria-labelledby="nominalValueDropdown">
+                                                  <li><a class="dropdown-item" href="?sort_by=STT_NOMINAL_VALUE&order=asc&start_date={{ start_date }}&end_date={{ end_date }}">Minor to Major</a></li>
+                                                  <li><a class="dropdown-item" href="?sort_by=STT_NOMINAL_VALUE&order=desc&start_date={{ start_date }}&end_date={{ end_date }}">Major to Minor</a></li>
+                                              </ul>
+                                          </div>
+                                      </th>
+                                      <th class="{% if sort_by == 'STT_PRICE' %} highlight-column {% endif %}">
+                                          <div class="bullet price"></div>Price
+                                          <div class="dropdown">
+                                              <a class="btn dropdown-toggle {% if sort_by == 'STT_PRICE' and order == 'asc' %} sorted-asc {% elif sort_by == 'STT_PRICE' and order == 'desc' %} sorted-desc {% endif %}" href="#" role="button" id="priceDropdown" data-bs-toggle="dropdown" aria-expanded="false"></a>
+                                              <ul class="dropdown-menu" aria-labelledby="priceDropdown">
+                                                  <li><a class="dropdown-item" href="?sort_by=STT_PRICE&order=asc&start_date={{ start_date }}&end_date={{ end_date }}">Minor to Major</a></li>
+                                                  <li><a class="dropdown-item" href="?sort_by=STT_PRICE&order=desc&start_date={{ start_date }}&end_date={{ end_date }}">Major to Minor</a></li>
+                                              </ul>
+                                          </div>
+                                      </th>
+                                      <th class="{% if sort_by == 'STT_NUM_SHARES' %} highlight-column {% endif %}">
+                                          <div class="bullet shares"></div>Number of Shares
+                                          <div class="dropdown">
+                                              <a class="btn dropdown-toggle {% if sort_by == 'STT_NUM_SHARES' and order == 'asc' %} sorted-asc {% elif sort_by == 'STT_NUM_SHARES' and order == 'desc' %} sorted-desc {% endif %}" href="#" role="button" id="numSharesDropdown" data-bs-toggle="dropdown" aria-expanded="false"></a>
+                                              <ul class="dropdown-menu" aria-labelledby="numSharesDropdown">
+                                                  <li><a class="dropdown-item" href="?sort_by=STT_NUM_SHARES&order=asc&start_date={{ start_date }}&end_date={{ end_date }}">Minor to Major</a></li>
+                                                  <li><a class="dropdown-item" href="?sort_by=STT_NUM_SHARES&order=desc&start_date={{ start_date }}&end_date={{ end_date }}">Major to Minor</a></li>
+                                              </ul>
+                                          </div>
+                                      </th>
+                                      <th class="{% if sort_by == 'STT_CASH_VALUE' %} highlight-column {% endif %}">
+                                          <div class="bullet cash"></div>Cash Value
+                                          <div class="dropdown">
+                                              <a class="btn dropdown-toggle {% if sort_by == 'STT_CASH_VALUE' and order == 'asc' %} sorted-asc {% elif sort_by == 'STT_CASH_VALUE' and order == 'desc' %} sorted-desc {% endif %}" href="#" role="button" id="cashValueDropdown" data-bs-toggle="dropdown" aria-expanded="false"></a>
+                                              <ul class="dropdown-menu" aria-labelledby="cashValueDropdown">
+                                                  <li><a class="dropdown-item" href="?sort_by=STT_CASH_VALUE&order=asc&start_date={{ start_date }}&end_date={{ end_date }}">Minor to Major</a></li>
+                                                  <li><a class="dropdown-item" href="?sort_by=STT_CASH_VALUE&order=desc&start_date={{ start_date }}&end_date={{ end_date }}">Major to Minor</a></li>
+                                              </ul>
+                                          </div>
+                                      </th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  {% for transaction in transactions %}
+                                  <tr>
+                                      <td class="{% if sort_by == 'STT_DATE' %} highlight-column {% endif %}">{{ transaction.STT_DATE }}</td>
+                                      <td class="{% if sort_by == 'STT_NOMINAL_VALUE' %} highlight-column {% endif %}">{{ transaction.STT_NOMINAL_VALUE }}</td>
+                                      <td class="{% if sort_by == 'STT_PRICE' %} highlight-column {% endif %}">{{ transaction.STT_PRICE }}</td>
+                                      <td class="{% if sort_by == 'STT_NUM_SHARES' %} highlight-column {% endif %}">{{ transaction.STT_NUM_SHARES }}</td>
+                                      <td class="{% if sort_by == 'STT_CASH_VALUE' %} highlight-column {% endif %}">{{ transaction.STT_CASH_VALUE }}</td>
+                                  </tr>
+                                  {% endfor %}
+                              </tbody>
+                          </table>
+                      </div>
+                  </div>
+              </div>
+          </div>
+        </main>
+      </div>
+    <footer>
+      <!-- place footer here -->
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+  </body>
+</html>
