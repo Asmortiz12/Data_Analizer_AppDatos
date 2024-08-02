@@ -16,10 +16,11 @@
     <div class="content">
       <main class="container-fluid">
         <div class="titulo">
-
-          <img src="{{ company.CON_IMAGE.url }}" alt="{{ company.COM_NAME }}" class="logo_titulo">
+          {% if company.CON_IMAGE %}
+              <img src="{{ company.CON_IMAGE.url }}" alt="{{ company.COM_NAME }}" class="logo_titulo">
+          {% endif %}
           <h1 class="title">{{ company.COM_NAME }}</h1>
-        </div>
+      </div>
         <br>
         <!-- <div class="card mb-4">
           <div class="card-header">

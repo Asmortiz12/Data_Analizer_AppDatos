@@ -31,7 +31,11 @@ class UploadFileForm(forms.Form):
 
 
 class SelectCompanyForm(forms.Form):
-    company_name = forms.ChoiceField(choices=[(c.COM_NAME, c.COM_NAME) for c in COMPANY.objects.all()])
+    company_name = forms.ChoiceField(choices=[])
+
+    def __init__(self, *args, **kwargs):
+        super(SelectCompanyForm, self).__init__(*args, **kwargs)
+        self.fields['company_name'].choices = [(c.COM_NAME, c.COM_NAME) for c in COMPANY.objects.all()]
 
 class EditCompanyForm(forms.ModelForm):
     class Meta:

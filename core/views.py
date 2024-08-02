@@ -40,30 +40,6 @@ def companies_processor(request):
     }
 
 
-class UploadExcelView(TemplateView):
-    def get(self, request):
-        return render(request, "upload_excel.html")
-
-    def post(self, request):
-        error = False
-        alert_message = None
-
-        if "excel" in request.FILES:
-            try:
-                excel_file = request.FILES["excel"]
-                df = process_excel_file(excel_file)
-                save_stock_transactions_from_df(df)
-                alert_message = "Datos importados correctamente"
-            except Exception as e:
-                alert_message = f"Ocurrió un error al importar los datos: {str(e)}"
-                error = True
-                print(f"Error durante la importación: {e}")
-
-        context = {
-            "alert_message": alert_message,
-            "error": error,
-        }
-        return render(request, "upload_excel.html", context)
 
 class UpdateRecordsByDateView(TemplateView):
     def get(self, request):
