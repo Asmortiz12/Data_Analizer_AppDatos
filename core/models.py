@@ -10,7 +10,10 @@ class COMPANY(models.Model):
     COM_NAME   = models.TextField(max_length=50, default="Default Name")
     COM_SYMBOL = models.TextField(max_length=6, default="SYM")
     COM_IMFORMATION = models.TextField(max_length=1000, default="Default Information")
-    CON_IMAGE = models.ImageField(upload_to='company_Logo/', blank=True, null=True)
+    CON_IMAGE = models.ImageField(upload_to='Company_Logos/', blank=True, null=True)
+     
+    def __str__(self):
+        return self.COM_NAME
 
 class PLACE_ORIGIN(models.Model):
     class Meta:

@@ -1,6 +1,6 @@
 from django.shortcuts import render,  get_object_or_404, redirect
 from django.views.generic import TemplateView
-from .forms import UploadFileForm, EditCompanyForm, SelectCompanyForm
+from .forms import UploadFileForm
 import pandas as pd
 from django.http import HttpResponse
 from openpyxl import Workbook
@@ -14,13 +14,16 @@ from datetime import datetime
 from django.db.models import Max, Min, Sum
 from django.db.models.functions import TruncMonth, TruncYear
 from django.core.exceptions import ValidationError
-from .utils import process_excel_file, save_stock_transactions_from_df, filter_dataframe_by_date
+from .utils import process_excel_file, save_stock_transactions_from_df, filter_dataframe_by_date, associate_company_logos
 from datetime import datetime
 from decimal import Decimal
 from .chart import (generate_candlestick_chart, generate_macd_chart, generate_rsi_chart,
                      generate_sma_chart, generate_volume_chart, generate_projection_chart)
 from .calculations import (calculate_ohlc, calculate_macd, calculate_rsi,
-                           calculate_sma, calculate_fair_value, calculate_general_summary)
+                           calculate_sma, calculate_general_summary)
+import zipfile
+from django.contrib import messages
+
 
 
 class HomeView(TemplateView):
@@ -41,9 +44,11 @@ def companies_processor(request):
 
 
 
-class UpdateRecordsByDateView(TemplateView):
+class ImportRecordsByDateView(TemplateView):
+    template_name = "import_records_by_date.html"
+
     def get(self, request):
-        return render(request, "update_records_by_date.html")
+        return render(request, self.template_name)
 
     def post(self, request):
         error = False
@@ -60,7 +65,15 @@ class UpdateRecordsByDateView(TemplateView):
                 if start_date and end_date:
                     df_filtered = filter_dataframe_by_date(df, start_date, end_date)
                     save_stock_transactions_from_df(df_filtered)
-                    alert_message = "Data imported successfully"
+
+                    # Asociar logos de compañías
+                    try:
+                        associate_company_logos()
+                        alert_message = "Data and logos imported successfully"
+                    except Exception as e:
+                        alert_message = f"Data imported but an error occurred while associating logos: {str(e)}"
+                        error = True
+
                 else:
                     alert_message = "Please provide a valid date range."
                     error = True
@@ -70,11 +83,13 @@ class UpdateRecordsByDateView(TemplateView):
                 error = True
                 print(f"Error during import: {e}")
 
-        context = {
+        return render(request, self.template_name, {
             "alert_message": alert_message,
             "error": error,
-        }
-        return render(request, "update_records_by_date.html", context)
+        })
+
+
+
 
 
 def export_to_excel(request):
@@ -182,7 +197,7 @@ class CompanyStockTransactionsView(TemplateView):
             'SMA_300': ohlc_df['SMA_300'].dropna().values[-10:]
         }
 
-        fair_value = calculate_fair_value(sma_values['SMA_100'])
+        
         projected_dates = pd.date_range(start=ohlc_df['STT_DATE'].iloc[-1], periods=11, freq='D')[1:]
         projection_div = generate_projection_chart(projected_dates, sma_values['SMA_100'])
 
@@ -207,7 +222,6 @@ class CompanyStockTransactionsView(TemplateView):
             "volume_div": volume_div,
             "sma_div": sma_div,
             "projection_div": projection_div,
-            "fair_value": fair_value,
             "order": order,
             "sort_by": sort_by,
             "general_summary": general_summary,
@@ -223,51 +237,3 @@ class CompanyStockTransactionsView(TemplateView):
 
         return context
 
-
-def edit_company(request):
-    select_form = SelectCompanyForm()
-    form = None
-    company = None
-
-    if request.method == 'POST':
-        if 'select_company' in request.POST:
-            select_form = SelectCompanyForm(request.POST)
-            if select_form.is_valid():
-                company_name = select_form.cleaned_data['company_name']
-                try:
-                    company = COMPANY.objects.get(COM_NAME=company_name)
-                    form = EditCompanyForm(instance=company)
-                except COMPANY.DoesNotExist:
-                    company = None
-                    form = None
-                    print(f"Company with name '{company_name}' not found.")
-        elif 'update_company' in request.POST:
-            company_name = request.POST.get('company_name')
-            try:
-                company = COMPANY.objects.get(COM_NAME=company_name)
-                form = EditCompanyForm(request.POST, request.FILES, instance=company)
-                if form.is_valid():
-                    updated_company = form.save(commit=False)
-
-                    # Check if the company image is updated
-                    if 'CON_IMAGE' in form.changed_data and company.CON_IMAGE:
-                        old_image_path = company.CON_IMAGE.path
-                        if default_storage.exists(old_image_path):
-                            try:
-                                default_storage.delete(old_image_path)
-                                print(f"Old image deleted: {old_image_path}")
-                            except Exception as e:
-                                print(f"Error deleting old image: {e}")
-
-                    updated_company.save()
-                    return redirect('edit_company')
-            except COMPANY.DoesNotExist:
-                company = None
-                form = None
-                print(f"Company with name '{company_name}' not found during update.")
-
-    return render(request, 'edit_company.html', {
-        'select_form': select_form,
-        'form': form,
-        'company': company,
-    })

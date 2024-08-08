@@ -29,22 +29,3 @@ class Stock_Transaction_Form(forms.Form):
 class UploadFileForm(forms.Form):
     excel = forms.FileField(label='Seleccionar archivo Excel')
 
-
-class SelectCompanyForm(forms.Form):
-    company_name = forms.ChoiceField(choices=[])
-
-    def __init__(self, *args, **kwargs):
-        super(SelectCompanyForm, self).__init__(*args, **kwargs)
-        self.fields['company_name'].choices = [(c.COM_NAME, c.COM_NAME) for c in COMPANY.objects.all()]
-
-class EditCompanyForm(forms.ModelForm):
-    class Meta:
-        model = COMPANY
-        fields = ['COM_IMFORMATION', 'CON_IMAGE']  # Only include these fields
-        widgets = {
-            'COM_IMFORMATION': forms.Textarea(attrs={'rows': 4}),
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['CON_IMAGE'].required = False 

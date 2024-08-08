@@ -36,11 +36,6 @@ def calculate_sma(ohlc_df):
     ohlc_df['SMA_300'] = ohlc_df['Close'].rolling(window=300).mean()
     return ohlc_df
 
-def calculate_fair_value(projected_cash_flows, discount_rate=0.1):
-    discount_rate_decimal = Decimal(discount_rate)
-    fair_value = sum(Decimal(cf) / (Decimal('1') + discount_rate_decimal)**i for i, cf in enumerate(projected_cash_flows, 1))
-    return round(fair_value, 3)
-
 def calculate_general_summary(df):
     df['STT_DATE'] = pd.to_datetime(df['STT_DATE'])  # Asegurarse de que las fechas sean tipo Timestamp
     one_month_ago = pd.Timestamp.today() - pd.DateOffset(months=1)
