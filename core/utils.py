@@ -57,7 +57,13 @@ def filter_dataframe_by_date(df, start_date, end_date):
 def associate_company_logos():
     zip_file_path = default_storage.path('CompanyLogos.zip')
     temp_dir = default_storage.path('temp/CompanyLogos/')
+    marker_file = os.path.join(temp_dir, 'extracted.marker')
     
+    # Check if the images have already been extractedb     v    
+    if os.path.exists(marker_file):
+        print("Las imágenes ya fueron descomprimidas.")
+        return
+
     # Ensure the temp directory exists
     os.makedirs(temp_dir, exist_ok=True)
     
@@ -75,10 +81,15 @@ def associate_company_logos():
                                 company.CON_IMAGE.save(file, image_file, save=True)
                         except COMPANY.DoesNotExist:
                             print(f"Company with ID '{company_id}' not found.")
+        
+        # Create the marker file to indicate extraction is complete
+        with open(marker_file, 'w') as f:
+            f.write('Images extracted')
     
     finally:
-        # Clean up temporary files
-        delete_directory(temp_dir)
+        # Clean up temporary files if necessary
+        # Optionally, you may not want to delete the files if they will be reused
+        pass
 
 def delete_directory(path):
     """Recursively delete a directory and its contents."""
