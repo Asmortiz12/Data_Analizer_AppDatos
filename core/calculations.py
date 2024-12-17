@@ -4,14 +4,15 @@ from decimal import Decimal
 
 def calculate_ohlc(df):
     df['STT_DATE'] = pd.to_datetime(df['STT_DATE'])
-    df['STT_PRICE'] = pd.to_numeric(df['STT_PRICE'], errors='coerce')
-    df['STT_NUM_SHARES'] = pd.to_numeric(df['STT_NUM_SHARES'], errors='coerce')
+    df['STT_PRICE'] = pd.to_numeric(df['STT_PRICE'], errors='coerce').fillna(0)
+    df['STT_NUM_SHARES'] = pd.to_numeric(df['STT_NUM_SHARES'], errors='coerce').fillna(0)
     ohlc_df = df.groupby(df['STT_DATE'].dt.date).agg({
         'STT_PRICE': ['first', 'max', 'min', 'last'],
         'STT_NUM_SHARES': 'sum'
     }).reset_index()
     ohlc_df.columns = ['STT_DATE', 'Open', 'High', 'Low', 'Close', 'Volume']
     return ohlc_df
+
 
 def calculate_macd(ohlc_df):
     ohlc_df['EMA_12'] = ohlc_df['Close'].ewm(span=12, adjust=False).mean()
