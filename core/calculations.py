@@ -5,45 +5,45 @@ def calculate_ohlc(df):
     df = df.copy()
     df['STT_DATE'] = pd.to_datetime(df['STT_DATE'])
     
-    # Simple list-based aggregation
-    grouped = df.groupby(df['STT_DATE'].dt.date).agg(
-        Open=('STT_PRICE', 'first'),
-        High=('STT_PRICE', 'max'),
-        Low=('STT_PRICE', 'min'),
-        Close=('STT_PRICE', 'last'),
-        Volume=('STT_NUM_SHARES', 'sum')
-    ).reset_index()
+    # Process daily OHLCV data
+    daily_data = pd.DataFrame({
+        'Open': df.groupby(df['STT_DATE'].dt.date)['STT_PRICE'].first(),
+        'High': df.groupby(df['STT_DATE'].dt.date)['STT_PRICE'].max(),
+        'Low': df.groupby(df['STT_DATE'].dt.date)['STT_PRICE'].min(),
+        'Close': df.groupby(df['STT_DATE'].dt.date)['STT_PRICE'].last(),
+        'Volume': df.groupby(df['STT_DATE'].dt.date)['STT_NUM_SHARES'].sum()
+    }).reset_index()
     
-    return grouped
+    daily_data.rename(columns={'index': 'STT_DATE'}, inplace=True)
+    return daily_data
 
+def calculate_macd(df):
+    prices = np.array(df['Close'])
+    
+    ema12 = pd.Series(prices).ewm(span=12, adjust=False).mean()
+    ema26 = pd.Series(prices).ewm(span=26, adjust=False).mean()
+    
+    df['MACD'] = ema12 - ema26
+    df['Signal_Line'] = df['MACD'].ewm(span=9, adjust=False).mean()
+    
+    return df
 
-def calculate_macd(ohlc_df):
-    close_prices = ohlc_df['Close'].values
-    ema_12 = pd.Series(close_prices).ewm(span=12, adjust=False).mean()
-    ema_26 = pd.Series(close_prices).ewm(span=26, adjust=False).mean()
+def calculate_rsi(df, periods=14):
+    close_delta = df['Close'].diff()
     
-    ohlc_df['EMA_12'] = ema_12
-    ohlc_df['EMA_26'] = ema_26
-    ohlc_df['MACD'] = ohlc_df['EMA_12'] - ohlc_df['EMA_26']
-    ohlc_df['Signal_Line'] = ohlc_df['MACD'].ewm(span=9, adjust=False).mean()
+    gains = close_delta.copy()
+    losses = close_delta.copy()
     
-    return ohlc_df
-
-def calculate_rsi(ohlc_df, periods=14):
-    close_prices = ohlc_df['Close'].values
-    deltas = np.diff(close_prices, prepend=close_prices[0])
+    gains[gains < 0] = 0
+    losses[losses > 0] = 0
     
-    gains = np.where(deltas > 0, deltas, 0)
-    losses = np.where(deltas < 0, -deltas, 0)
+    avg_gain = gains.rolling(window=periods).mean()
+    avg_loss = abs(losses.rolling(window=periods).mean())
     
-    avg_gains = pd.Series(gains).rolling(window=periods, min_periods=1).mean()
-    avg_losses = pd.Series(losses).rolling(window=periods, min_periods=1).mean()
+    rs = avg_gain / avg_loss
+    df['RSI'] = 100 - (100 / (1 + rs))
     
-    rs = avg_gains / avg_losses
-    ohlc_df['RSI'] = 100 - (100 / (1 + rs))
-    
-    return ohlc_df
-
+    return df
 def calculate_sma(ohlc_df):
     close_prices = ohlc_df['Close'].values
     

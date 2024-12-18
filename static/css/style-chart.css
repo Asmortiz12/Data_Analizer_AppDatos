@@ -1,56 +1,164 @@
-.chart-container {
-    width: 100%;
+:root {
+  --primary-color: #2c3e50;
+  --secondary-color: #34495e;
+  --accent-color: #3498db;
+  --success-color: #27ae60;
+  --warning-color: #f39c12;
+  --danger-color: #e74c3c;
+  --light-bg: #ecf0f1;
+  --dark-bg: #2c3e50;
+  --text-primary: #2c3e50;
+  --text-secondary: #7f8c8d;
 }
+
+body {
+  background-color: var(--light-bg);
+  color: var(--text-primary);
+}
+
+.titulo {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  padding: 2rem;
+  border-radius: 15px;
+  margin-bottom: 2rem;
+  color: white;
+}
+
+.card {
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: white;
+  margin-bottom: 2rem;
+}
+
+.accordion {
+  height: auto;
+  min-height: 50%;
+}
+
 .accordion-button {
-    display: flex;
-    align-items: left;
-    justify-content: left;
-    width: 100%;
-    padding: 0.75rem 1.25rem;
-    color: #fff;
-    font-size: 15px;
-    background-color: #007bff;
-    border-color: #007bff;
-    text-align: right;
+  background-color: var(--primary-color) !important;
+  color: white !important;
+  border: none;
+  border-radius: 10px;
+  padding: 1rem 1.5rem;
+  font-weight: 500;
 }
-.accordion-button:focus {
-    z-index: 1;
-    border-color: #0056b3;
-    box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.5);
-}
+
 .accordion-button:not(.collapsed) {
-    color: #fff;
-    background-color: #6598ce;
-    box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.125);
+  background-color: var(--secondary-color) !important;
+  color: white !important;
 }
-.accordion-button::after {
-    display: none;
-}
+
 .accordion-body {
-    padding: 0;
+  background-color: var(--primary-color);
+  padding: 0;
+  height: auto;
+}
+
+.accordion-item {
+  height: auto;
+}
+
+.table {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.table thead th {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+}
+
+.btn-primary {
+  background-color: var(--accent-color);
+  border: none;
+  padding: 0.5rem 1.5rem;
+  border-radius: 8px;
+}
+
+.btn-primary:hover {
+  background-color: var(--secondary-color);
+}
+
+.accordion-item {
+  height: auto;
+}
+
+.accordion-collapse {
+  height: 100%;
+}
+
+.accordion-body {
+  background-color: var(--primary-color);
+  padding: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Desktop (Large Screens) */
+@media screen and (min-width: 1200px) {
+  .chart-container {
+      position: relative;
+      width: 100% !important;
+      height: 100% !important;
+      min-height: 500px;
+  }
+
+  .chart-container > div,
+  .js-plotly-plot,
+  .plot-container {
+      width: 100% !important;
+      height: 100% !important;
+      min-height: 500px;
+  }
+}
+
+/* Tablets and Small Desktops */
+@media screen and (min-width: 768px) and (max-width: 1199px) {
+  .chart-container {
+      min-height: 400px;
+  }
+
+  .chart-container > div,
+  .js-plotly-plot,
+  .plot-container {
+      min-height: 400px;
+  }
+}
+
+/* Mobile Devices */
+@media screen and (max-width: 767px) {
+  .chart-container {
+      min-height: 300px;
+  }
+
+  .chart-container > div,
+  .js-plotly-plot,
+  .plot-container {
+      min-height: 300px;
+  }
+}
+
+/* Force immediate resize */
+.accordion-button:not(.collapsed) + .accordion-collapse .chart-container {
+  height: 100% !important;
+  min-height: 400px;
 }
 .bullet {
-    width: 10px;
-    height: 10px;
-    display: inline-block;
-    border-radius: 50%;
-    margin-right: 5px;
-  }
-  .bullet.date {
-    background-color: #ff6347;
-  }
-  .bullet.description {
-    background-color: #1e90ff;
-  }
-  .bullet.nominal {
-    background-color: #32cd32;
-  }
-  .bullet.price {
-    background-color: #ff69b4;
-  }
-  .bullet.shares {
-    background-color: #ffd700;
-  }
-  .bullet.cash {
-    background-color: #9400d3;
-  }
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.bullet.date { background-color: var(--accent-color); }
+.bullet.shares { background-color: var(--success-color); }
+.bullet.price { background-color: var(--warning-color); }
+.bullet.cash { background-color: var(--danger-color); }
+.bullet.nominal { background-color: var(--secondary-color); }
