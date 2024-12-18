@@ -5,17 +5,17 @@ def calculate_ohlc(df):
     df = df.copy()
     df['STT_DATE'] = pd.to_datetime(df['STT_DATE'])
     
-    # Process daily OHLCV data
-    daily_data = pd.DataFrame({
-        'Open': df.groupby(df['STT_DATE'].dt.date)['STT_PRICE'].first(),
-        'High': df.groupby(df['STT_DATE'].dt.date)['STT_PRICE'].max(),
-        'Low': df.groupby(df['STT_DATE'].dt.date)['STT_PRICE'].min(),
-        'Close': df.groupby(df['STT_DATE'].dt.date)['STT_PRICE'].last(),
-        'Volume': df.groupby(df['STT_DATE'].dt.date)['STT_NUM_SHARES'].sum()
-    }).reset_index()
+    # Simple list-based aggregation
+    grouped = df.groupby(df['STT_DATE'].dt.date).agg(
+        Open=('STT_PRICE', 'first'),
+        High=('STT_PRICE', 'max'),
+        Low=('STT_PRICE', 'min'),
+        Close=('STT_PRICE', 'last'),
+        Volume=('STT_NUM_SHARES', 'sum')
+    ).reset_index()
     
-    daily_data.rename(columns={'index': 'STT_DATE'}, inplace=True)
-    return daily_data
+    return grouped
+
 
 def calculate_macd(ohlc_df):
     close_prices = ohlc_df['Close'].values
