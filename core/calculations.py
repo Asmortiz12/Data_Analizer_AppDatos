@@ -18,25 +18,31 @@ def calculate_ohlc(df):
     return daily_data
 
 def calculate_macd(df):
+    # Use numpy arrays instead of matrix
     prices = np.array(df['Close'])
     
+    # Calculate EMAs using arrays
     ema12 = pd.Series(prices).ewm(span=12, adjust=False).mean()
     ema26 = pd.Series(prices).ewm(span=26, adjust=False).mean()
     
+    # Calculate MACD line
     df['MACD'] = ema12 - ema26
     df['Signal_Line'] = df['MACD'].ewm(span=9, adjust=False).mean()
     
     return df
 
 def calculate_rsi(df, periods=14):
+    # Calculate using numpy arrays
     close_delta = df['Close'].diff()
     
+    # Separate gains and losses
     gains = close_delta.copy()
     losses = close_delta.copy()
     
     gains[gains < 0] = 0
     losses[losses > 0] = 0
     
+    # Calculate RSI
     avg_gain = gains.rolling(window=periods).mean()
     avg_loss = abs(losses.rolling(window=periods).mean())
     
@@ -44,15 +50,16 @@ def calculate_rsi(df, periods=14):
     df['RSI'] = 100 - (100 / (1 + rs))
     
     return df
-def calculate_sma(ohlc_df):
-    close_prices = ohlc_df['Close'].values
-    
-    for period in [100, 200, 300]:
-        sma = pd.Series(close_prices).rolling(window=period).mean()
-        ohlc_df[f'SMA_{period}'] = sma
-    
-    return ohlc_df
 
+def calculate_sma(df):
+    # Calculate SMAs using numpy arrays
+    close_prices = np.array(df['Close'])
+    
+    df['SMA_100'] = pd.Series(close_prices).rolling(window=100).mean()
+    df['SMA_200'] = pd.Series(close_prices).rolling(window=200).mean()
+    df['SMA_300'] = pd.Series(close_prices).rolling(window=300).mean()
+    
+    return df
 def calculate_general_summary(df):
     df = df.copy()
     df['STT_DATE'] = pd.to_datetime(df['STT_DATE'])
